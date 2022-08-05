@@ -1,0 +1,864 @@
+classdef homeWork5 < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure                  matlab.ui.Figure
+        UIAxes                    matlab.ui.control.UIAxes
+        RGBButton                 matlab.ui.control.Button
+        HSVButton                 matlab.ui.control.Button
+        DNDR90Button              matlab.ui.control.Button
+        DNDR180Button             matlab.ui.control.Button
+        DNDR270Button             matlab.ui.control.Button
+        YANSITButton              matlab.ui.control.Button
+        NEGATFButton              matlab.ui.control.Button
+        LOGARTMAButton            matlab.ui.control.Button
+        KUVVETButton              matlab.ui.control.Button
+        katsayEditFieldLabel      matlab.ui.control.Label
+        katsayEditField           matlab.ui.control.NumericEditField
+        katsayEditField_2Label    matlab.ui.control.Label
+        katsayEditField_2         matlab.ui.control.NumericEditField
+        ResmikaydetButton         matlab.ui.control.Button
+        YGFButton                 matlab.ui.control.Button
+        turevalmaButton           matlab.ui.control.Button
+        AGFButton                 matlab.ui.control.Button
+        RESIMSECButton            matlab.ui.control.Button
+        UIAxes2                   matlab.ui.control.UIAxes
+        automaticthresholdButton  matlab.ui.control.Button
+        BoundaryextractionButton  matlab.ui.control.Button
+        OpeningButton             matlab.ui.control.Button
+        ClosingButton             matlab.ui.control.Button
+        dilationButton            matlab.ui.control.Button
+        erosionButton             matlab.ui.control.Button
+    end
+
+    % Callbacks that handle component events
+    methods (Access = private)
+
+        % Button pushed function: RGBButton
+        function RGBButtonPushed(app, event)
+        cla(app.UIAxes);
+        close all;
+            global a;
+            [filename, pathname] = uigetfile('*.*', 'Pick an Image');
+            filename=strcat(pathname,filename);
+            a=imread(filename);
+            imshow(a,'Parent',app.UIAxes);   
+         % Show image in legacy figure and turn on datacursor
+            fig = figure(); 
+            ax = axes(fig); 
+            image(ax,a); 
+            ax.Colormap = jet(100); 
+            dcm = datacursormode(fig); 
+            dcm.Enable = 'on'; 
+            title(ax, 'RGB and pixel information')
+   
+            
+        end
+
+        % Button pushed function: HSVButton
+        function HSVButtonPushed(app, event)
+             %cla(app.UIAxes);
+           % close all;
+            global a;
+            global HSV;
+%             [filename, pathname] = uigetfile('*.*', 'Pick an Image');
+%             filename=strcat(pathname,filename);
+%             a=imread(filename);
+              HSV = rgb2hsv(a);
+%             imshow(a,'Parent',app.UIAxes); 
+            
+             % Show image in legacy figure and turn on datacursor
+            fig = figure(); 
+            ax = axes(fig); 
+            image(ax,a); 
+            ax.Colormap = jet(100); 
+            dcm = datacursormode(fig); 
+            dcm.Enable = 'on'; 
+             imshow(HSV);
+            title(ax, 'HSV and pixel information')
+            
+        end
+
+        % Button pushed function: DNDR90Button
+        function DNDR90ButtonPushed(app, event)
+%             close all;
+            global a;
+            global I;
+            a=I;
+%             [filename, pathname] = uigetfile('*.*', 'Pick an Image');
+%             filename=strcat(pathname,filename);
+%             I=imread(filename);
+%             imshow(I,'Parent',app.UIAxes); 
+
+% Initilase an image
+I2 = [];
+
+%iterate each layer
+for k = 1:3
+	Im = I(:, :, k);
+
+	%Flip every layer up to down.
+	Im1 = Im(end:-1:1, :);
+
+	%Take transpose of the image.
+	Im3 = Im1';
+	I2(:, :, k)=Im3;
+end
+
+% Show the image.
+        imshow(uint8(I2),'Parent',app.UIAxes2);
+% figure, imshow(uint8(I2));
+%             title('90 degree');
+        end
+
+        % Button pushed function: DNDR180Button
+        function DNDR180ButtonPushed(app, event)
+%             close all;
+            global a;
+%             [filename, pathname] = uigetfile('*.*', 'Pick an Image');
+%             filename=strcat(pathname,filename);
+%             a=imread(filename);
+%             imshow(a,'Parent',app.UIAxes); 
+
+% Get the dimensions of the image
+[x, y, z] = size(a);
+
+
+% Reverse elements of each column
+% in each image plane (dimension)
+for plane = 1 : z
+	len = x;
+	for i = 1 : x
+		for j = 1 : y
+			
+			if i < x/2
+				temp =a(i, j, plane);
+				a(i, j, plane) = a(len, j, plane);
+				a(len, j, plane) = temp;
+				
+			end
+		end
+		len = len - 1;
+	end
+end
+
+
+% Display the vertically flipped image
+    imshow(a,'Parent',app.UIAxes2); 
+% imshow(a);
+% title('Vertically flipped image');
+
+            
+            
+            
+        end
+
+        % Button pushed function: YANSITButton
+        function YANSITButtonPushed(app, event)
+%             cla(app.UIAxes); 
+            global a;
+%             close all;
+%             [filename, pathname] = uigetfile('*.*', 'Pick an Image');
+%             filename=strcat(pathname,filename);
+%            a=imread(filename);
+%             imshow(a,'Parent',app.UIAxes); 
+% Read the target image file
+
+% Get the dimensions of the image
+[x, y, z] =size(a);
+
+
+% Reverse elements of each row
+% in every image plane
+for plane = 1: z
+	for i = 1 : x
+		len = y;
+		for j = 1 : y
+			if j < y/2
+				temp = a(i, j, plane);
+				a(i, j, plane) = a(i, len, plane);
+				a(i, len, plane) = temp;
+				len = len - 1;
+			end
+		end
+	end
+end
+
+
+% Display the mirror image
+     imshow(a,'Parent',app.UIAxes2);   
+% imshow(a);
+% title('Mirror image');
+
+        end
+
+        % Button pushed function: NEGATFButton
+        function NEGATFButtonPushed(app, event)
+%         cla(app.UIAxes); 
+            global a;
+%             close all;
+%             [filename, pathname] = uigetfile('*.*', 'Pick an Image');
+%             filename=strcat(pathname,filename);
+%             a=imread(filename);
+%           imshow(a,'Parent',app.UIAxes); 
+            
+            L=2^8;
+            a =(L-1)-a;
+            imshow(a,'Parent',app.UIAxes2);
+%             imshow(neg);
+%             title("Negative Image")
+            
+        end
+
+        % Button pushed function: DNDR270Button
+        function DNDR270ButtonPushed(app, event)
+%             close all;
+            global a;
+%             [filename, pathname] = uigetfile('*.*', 'Pick an Image');
+%             filename=strcat(pathname,filename);
+%             a=imread(filename);
+%             imshow(a,'Parent',app.UIAxes); 
+            
+            R=rot90(a(:,:,1),1);
+            G=rot90(a(:,:,2),1);
+            B=rot90(a(:,:,3),1);
+
+            C(:,:,1)=rot90(a(:,:,1),1);
+            C(:,:,2)=rot90(a(:,:,2),1);
+            C(:,:,3)=rot90(a(:,:,3),1);
+
+             imshow(C,'Parent',app.UIAxes2);
+%             image(C);
+%             title('270 degree turned');
+            
+            
+            
+            
+            
+            
+        end
+
+        % Button pushed function: LOGARTMAButton
+        function LOGARTMAButtonPushed(app, event)
+            close all;
+            global a;
+            global value1;
+%             [filename, pathname] = uigetfile('*.*', 'Pick an Image');
+%             filename=strcat(pathname,filename);
+%             a=imread(filename);
+%             imshow(a,'Parent',app.UIAxes); 
+            
+            
+            a =im2double(a);
+            %s=a;
+            [r,c] =size(a);
+           katsayilog= value1;
+           % katsayilog=4; %katsayı arttıkça resim rengi açılıyor.
+    for i=1:r
+        for j=1:c
+        
+         a(i,j)=katsayilog*log(1+a(i,j));%logaritma alma işlemi
+        
+        end
+    
+    end
+
+        imshow(a,'Parent',app.UIAxes2);
+%         imshow(a);
+%         title('logarithm');
+            
+            
+        end
+
+        % Button pushed function: KUVVETButton
+        function KUVVETButtonPushed(app, event)
+            close all;
+            global a;
+            global value 
+%             [filename, pathname] = uigetfile('*.*', 'Pick an Image');
+%             filename=strcat(pathname,filename);
+%             a=imread(filename);
+%             imshow(a,'Parent',app.UIAxes); 
+            
+            a =im2double(a);
+            %img =A;
+            [r,c] =size(a);
+            katsayipower = value;
+            %katsayipower=1;
+    for i=1:r
+        for j=1:c
+          a(i,j)=katsayipower*a(i,j)^15; %katsayı ile resmin koyuluğu ayarlanır
+        end
+    
+    end
+
+        imshow(a,'Parent',app.UIAxes2); 
+        %imshow(a);
+       % title('Power');
+            
+            
+            
+            
+        end
+
+        % Value changed function: katsayEditField
+        function katsayEditFieldValueChanged(app, event)
+           global value 
+            
+            value = app.katsayEditField.Value;
+            
+        end
+
+        % Value changed function: katsayEditField_2
+        function katsayEditField_2ValueChanged(app, event)
+            global value1
+            
+            value1 = app.katsayEditField_2.Value;
+            
+        end
+
+        % Button pushed function: ResmikaydetButton
+        function ResmikaydetButtonPushed(app, event)
+            global a;
+            global B;
+
+startingFolder = userpath; % Or "pwd" or wherever you want.
+defaultFileName = fullfile(startingFolder, '*.jpg');
+[baseFileName, folder] = uiputfile(defaultFileName, 'Specify a file');
+if baseFileName == 0
+	% User clicked the Cancel button.
+	return;
+end
+fullFileName = fullfile(folder, baseFileName);
+imwrite(B, fullFileName);
+            
+        end
+
+        % Button pushed function: YGFButton
+        function YGFButtonPushed(app, event)
+%           clc;
+%           close all;
+          global a;
+          global B;
+% a = im2double(imread('cameraman.tif')); %// Read in your image
+a=im2double(a);
+lap = [-1 -1 -1; -1 8 -1; -1 -1 -1]; %// Change - Centre is now positive
+resp = imfilter(a, lap, 'conv'); %// Change
+
+%// Change - Normalize the response image
+minR = min(resp(:));
+maxR = max(resp(:));
+resp = (resp - minR) / (maxR - minR);
+
+%// Change - Adding to original image now
+sharpened = a + resp;
+
+%// Change - Normalize the sharpened result
+minA = min(sharpened(:));
+maxA = max(sharpened(:));
+sharpened = (sharpened - minA) / (maxA - minA);
+
+%// Change - Perform linear contrast enhancement
+B = imadjust(sharpened, [60/255 200/255], [0 1]);
+
+
+  
+          imshow(B,'Parent',app.UIAxes2);   
+           
+            
+            
+        end
+
+        % Button pushed function: RESIMSECButton
+        function RESIMSECButtonPushed(app, event)
+            global a;
+           
+           cla(app.UIAxes);
+           cla(app.UIAxes2);
+           [filename, pathname] = uigetfile('*.*', 'Pick an Image');
+           filename=strcat(pathname,filename);
+           a=imread(filename);
+           imshow(a,'Parent',app.UIAxes);  
+            
+            
+            
+        end
+
+        % Button pushed function: turevalmaButton
+        function turevalmaButtonPushed(app, event)
+             
+        global a;
+        global B;
+% B=rgb2gray(a);
+% figure,imshow (B);
+C=double(B);
+for i=1:size (C,1)-2
+for j=1:size (C,2)-2
+% 15obel mask for x-direction:
+Gx=((2*C(i+2,j+1)+C(i+2,j)+C(i+2,j+2))-(2*C(i,j+1)+C(i,j)+C(i,j+2)));
+% 1Sobel mask for y-direction:
+Gy=((2*C(i+1,j+2)+C(i,j+2)+C(i+2,j+2))-(2*C(i+1,j)+C(i,j)+C(i+2,j)));
+% The gradient of the image
+
+B(i,j)=sqrt(Gx.^2+Gy.^2);
+end
+end
+imshow(B,'Parent',app.UIAxes2); 
+
+            
+            
+            
+            
+        end
+
+        % Button pushed function: AGFButton
+        function AGFButtonPushed(app, event)
+    global a;
+    global B;
+    Img=a;
+  A = imnoise(Img,'Gaussian');
+
+ % Image with noise
+
+I = double(A);
+
+% Design the Gaussian Kernel
+% Standard Deviation
+sigma = 1.76;
+% Window size
+sz = 4;
+[x,y]=meshgrid(-sz:sz,-sz:sz);
+
+M = size(x,1)-1;
+N = size(y,1)-1;
+Exp_comp = -(x.^2+y.^2)/(2*sigma*sigma);
+Kernel= exp(Exp_comp)/(2*pi*sigma*sigma);
+% Initialize
+B=zeros(size(I));
+% Pad the vector with zeros
+I = padarray(I,[sz sz]);
+
+% Convolution
+for i = 1:size(I,1)-M
+    for j =1:size(I,2)-N
+        Temp = I(i:i+M,j:j+M).*Kernel;
+        B(i,j)=sum(Temp(:));
+    end
+end
+% Image without Noise after Gaussian blur
+imshow( uint8(B),'Parent',app.UIAxes2); 
+
+
+
+            
+            
+            
+            
+            
+        end
+
+        % Button pushed function: automaticthresholdButton
+        function automaticthresholdButtonPushed(app, event)
+	
+	             close all;
+            global a;
+            Im =a;
+           
+            global A;
+
+
+% % % % read image and convert gray% % % % %
+ 
+Im=histeq(Im);
+Im=imresize(Im,0.9);
+imshow(Im,'Parent',app.UIAxes);
+% Im=rgb2gray(Im);
+
+% % % % % % % find histogram % % % % % %
+
+H=imhist(Im);
+
+% % % % % % % initialize variables % % % % % % % 
+Max_Variance= 0;
+sigma= zeros(1,256);
+TP=sum(H);
+
+% % % % calculate propability of hisogram level 
+
+P=H/TP;
+
+% % % % % run loop % % % %
+for k = 50:250
+    Wb = sum(P(1:k));
+    Wf = sum(P(k+1 : end));
+    Ub = dot(0:k-1,P(1:k))/ Wb;
+    Uf = dot(k:255,P(k+1:256))/Wf;
+    sigma(k) = Wb*Wf*((Ub-Uf)^2);
+  
+end
+Max_Variance = max(sigma);
+L = find(sigma == Max_Variance);
+Threshold = L-1;
+
+% % % % % % display output% % % % % % %
+% imshow(Im>Threshold)
+A = (Im>Threshold);
+imshow(A,'Parent',app.UIAxes2); 
+
+    
+    
+        end
+
+        % Button pushed function: BoundaryextractionButton
+        function BoundaryextractionButtonPushed(app, event)
+          close all;
+            global a;
+            I =a;
+            global extract;
+                   
+          
+            % % % %dilation process % % % 
+            
+I=im2bw(I);
+%Structuring element
+B=[1 1 1 1 1 1 1;];
+C=padarray(I,[0 3]);
+D=false(size(I));
+for i=1:size(C,1)
+    for j=1:size(C,2)-6
+        D(i,j)=sum(B&C(i,j:j+6));
+    end
+end
+        % figure,imshow(D);
+
+% % % % %erosion process % % % % % %
+
+% Matlab code for Erosion
+% read image
+
+% create structuring element			
+se=ones(5, 5);
+
+% store number of rows
+% in P and number of columns in Q.		
+[P, Q]=size(se);
+
+% create a zero matrix of size I.	
+In=zeros(size(I, 1), size(I, 2));
+
+for i=ceil(P/2):size(I, 1)-floor(P/2)
+	for j=ceil(Q/2):size(I, 2)-floor(Q/2)
+
+		% take all the neighbourhoods.
+		on=I(i-floor(P/2):i+floor(P/2), j-floor(Q/2):j+floor(Q/2));
+
+		% take logical se
+		nh=on(logical(se));
+	
+		% compare and take minimum value of the neighbor
+		% and set the pixel value to that minimum value.
+		In(i, j)=min(nh(:));	
+	end
+end
+
+        %  imshow(In);
+extract=D-In;
+% imshow(extract)
+imshow(extract,'Parent',app.UIAxes2);
+        end
+
+        % Button pushed function: OpeningButton
+        function OpeningButtonPushed(app, event)
+            global a;
+            a=im2bw(a);           
+            se=ones(5, 5);     
+            [P, Q]=size(se);   
+            In=zeros(size(a, 1), size(a, 2));
+for i=ceil(P/2):size(a, 1)-floor(P/2)
+    for j=ceil(Q/2):size(a, 2)-floor(Q/2)
+        on=a(i-floor(P/2):i+floor(P/2), j-floor(Q/2):j+floor(Q/2));
+        nh=on(logical(se));
+        In(i, j)=min(nh(:));     
+    end
+end
+
+B=[1 1 1 1 1 1 1;];
+C=padarray(In,[0 3]);
+D=false(size(In));
+for i=1:size(C,1)
+    for j=1:size(C,2)-6
+        D(i,j)=sum(B&C(i,j:j+6));
+    end
+end
+
+
+            imshow(D,'Parent',app.UIAxes2);
+        end
+
+        % Button pushed function: ClosingButton
+        function ClosingButtonPushed(app, event)
+            global a;
+              a=im2bw(a);           
+    b=[1 1 1 1 1 1 1;];
+    c=padarray(a,[0 3]);
+    d=false(size(a));
+for i=1:size(c,1)
+    for j=1:size(c,2)-6
+        d(i,j)=sum(b&c(i,j:j+6));
+    end
+end
+        se=ones(5, 5);          
+        [P, Q]=size(se);
+        
+            A=zeros(size(d, 1), size(d, 2));
+ 
+for i=ceil(P/2):size(d, 1)-floor(P/2)
+    for j=ceil(Q/2):size(d, 2)-floor(Q/2)
+        on=d(i-floor(P/2):i+floor(P/2), j-floor(Q/2):j+floor(Q/2));
+        nh=on(logical(se));
+        A(i, j)=min(nh(:));     
+    end
+end
+           
+        imshow(A,'Parent',app.UIAxes2);
+        end
+
+        % Button pushed function: dilationButton
+        function dilationButtonPushed(app, event)
+      
+            global a;
+            a = im2bw(a);
+            [r, c]=size(a);
+            w=ones(3,3);
+            output=[];
+            for x=2:1:r-1
+                for y= 2:1:c-1
+                g=[w(1)*a(x-1,y-1) w(2)*a(x-1,y) w(3)*a(x-1,y+1)...
+                w(4)*a(x,y-1) w(5)*a(x,y) w(6)*a(x,y+1)...
+                w(7)*a(x+1,y-1) w(8)*a(x+1,y) w(9)*a(x+1,y+1)];
+                output(x,y)=max(g);
+                end
+            end
+          imshow(output,'Parent',app.UIAxes2);
+        end
+
+        % Button pushed function: erosionButton
+        function erosionButtonPushed(app, event)
+            global a;
+            a = im2bw(a);
+            config=ones(5, 5);
+            [P, Q]=size(config);
+            In=zeros(size(a, 1), size(a, 2));
+
+            for i=ceil(P/2):size(a, 1)-floor(P/2)
+                for j=ceil(Q/2):size(a, 2)-floor(Q/2)
+
+                    check=a(i-floor(P/2):i+floor(P/2), j-floor(Q/2):j+floor(Q/2));
+                    nresult=check(logical(config));
+                    In(i, j)=min(nresult(:)); 
+                end
+            end
+            imshow(In,'Parent',app.UIAxes2);
+        end
+    end
+
+    % Component initialization
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Create UIFigure and hide until all components are created
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Color = [0.902 0.902 0.902];
+            app.UIFigure.Position = [100 100 872 495];
+            app.UIFigure.Name = 'MATLAB App';
+
+            % Create UIAxes
+            app.UIAxes = uiaxes(app.UIFigure);
+            title(app.UIAxes, 'Seçilen Resim')
+            xlabel(app.UIAxes, 'X')
+            ylabel(app.UIAxes, 'Y')
+            zlabel(app.UIAxes, 'Z')
+            app.UIAxes.Position = [145 161 328 301];
+
+            % Create RGBButton
+            app.RGBButton = uibutton(app.UIFigure, 'push');
+            app.RGBButton.ButtonPushedFcn = createCallbackFcn(app, @RGBButtonPushed, true);
+            app.RGBButton.BackgroundColor = [0.9412 0.9412 0.9412];
+            app.RGBButton.Position = [28 46 100 22];
+            app.RGBButton.Text = 'RGB';
+
+            % Create HSVButton
+            app.HSVButton = uibutton(app.UIFigure, 'push');
+            app.HSVButton.ButtonPushedFcn = createCallbackFcn(app, @HSVButtonPushed, true);
+            app.HSVButton.Position = [28 75 100 22];
+            app.HSVButton.Text = 'HSV';
+
+            % Create DNDR90Button
+            app.DNDR90Button = uibutton(app.UIFigure, 'push');
+            app.DNDR90Button.ButtonPushedFcn = createCallbackFcn(app, @DNDR90ButtonPushed, true);
+            app.DNDR90Button.Position = [28 109 100 22];
+            app.DNDR90Button.Text = 'DÖNDÜR(90)';
+
+            % Create DNDR180Button
+            app.DNDR180Button = uibutton(app.UIFigure, 'push');
+            app.DNDR180Button.ButtonPushedFcn = createCallbackFcn(app, @DNDR180ButtonPushed, true);
+            app.DNDR180Button.Position = [28 145 100 22];
+            app.DNDR180Button.Text = 'DÖNDÜR(180)';
+
+            % Create DNDR270Button
+            app.DNDR270Button = uibutton(app.UIFigure, 'push');
+            app.DNDR270Button.ButtonPushedFcn = createCallbackFcn(app, @DNDR270ButtonPushed, true);
+            app.DNDR270Button.Position = [28 181 100 22];
+            app.DNDR270Button.Text = 'DÖNDÜR(270)';
+
+            % Create YANSITButton
+            app.YANSITButton = uibutton(app.UIFigure, 'push');
+            app.YANSITButton.ButtonPushedFcn = createCallbackFcn(app, @YANSITButtonPushed, true);
+            app.YANSITButton.Position = [28 221 100 22];
+            app.YANSITButton.Text = 'YANSIT';
+
+            % Create NEGATFButton
+            app.NEGATFButton = uibutton(app.UIFigure, 'push');
+            app.NEGATFButton.ButtonPushedFcn = createCallbackFcn(app, @NEGATFButtonPushed, true);
+            app.NEGATFButton.Position = [28 256 100 22];
+            app.NEGATFButton.Text = 'NEGATİF';
+
+            % Create LOGARTMAButton
+            app.LOGARTMAButton = uibutton(app.UIFigure, 'push');
+            app.LOGARTMAButton.ButtonPushedFcn = createCallbackFcn(app, @LOGARTMAButtonPushed, true);
+            app.LOGARTMAButton.Position = [28 329 100 22];
+            app.LOGARTMAButton.Text = 'LOGARİTMA';
+
+            % Create KUVVETButton
+            app.KUVVETButton = uibutton(app.UIFigure, 'push');
+            app.KUVVETButton.ButtonPushedFcn = createCallbackFcn(app, @KUVVETButtonPushed, true);
+            app.KUVVETButton.Position = [28 396 100 22];
+            app.KUVVETButton.Text = 'KUVVET';
+
+            % Create katsayEditFieldLabel
+            app.katsayEditFieldLabel = uilabel(app.UIFigure);
+            app.katsayEditFieldLabel.HorizontalAlignment = 'right';
+            app.katsayEditFieldLabel.Position = [28 362 46 22];
+            app.katsayEditFieldLabel.Text = 'katsayı';
+
+            % Create katsayEditField
+            app.katsayEditField = uieditfield(app.UIFigure, 'numeric');
+            app.katsayEditField.ValueChangedFcn = createCallbackFcn(app, @katsayEditFieldValueChanged, true);
+            app.katsayEditField.Position = [96 362 24 22];
+
+            % Create katsayEditField_2Label
+            app.katsayEditField_2Label = uilabel(app.UIFigure);
+            app.katsayEditField_2Label.HorizontalAlignment = 'right';
+            app.katsayEditField_2Label.Position = [32 295 48 22];
+            app.katsayEditField_2Label.Text = 'katsayı';
+
+            % Create katsayEditField_2
+            app.katsayEditField_2 = uieditfield(app.UIFigure, 'numeric');
+            app.katsayEditField_2.ValueChangedFcn = createCallbackFcn(app, @katsayEditField_2ValueChanged, true);
+            app.katsayEditField_2.Position = [92 295 24 22];
+
+            % Create ResmikaydetButton
+            app.ResmikaydetButton = uibutton(app.UIFigure, 'push');
+            app.ResmikaydetButton.ButtonPushedFcn = createCallbackFcn(app, @ResmikaydetButtonPushed, true);
+            app.ResmikaydetButton.Position = [748 13 113 43];
+            app.ResmikaydetButton.Text = 'Resmi kaydet';
+
+            % Create YGFButton
+            app.YGFButton = uibutton(app.UIFigure, 'push');
+            app.YGFButton.ButtonPushedFcn = createCallbackFcn(app, @YGFButtonPushed, true);
+            app.YGFButton.Position = [192 69 114 24];
+            app.YGFButton.Text = '(YGF)';
+
+            % Create turevalmaButton
+            app.turevalmaButton = uibutton(app.UIFigure, 'push');
+            app.turevalmaButton.ButtonPushedFcn = createCallbackFcn(app, @turevalmaButtonPushed, true);
+            app.turevalmaButton.Position = [199 109 100 22];
+            app.turevalmaButton.Text = 'turev alma';
+
+            % Create AGFButton
+            app.AGFButton = uibutton(app.UIFigure, 'push');
+            app.AGFButton.ButtonPushedFcn = createCallbackFcn(app, @AGFButtonPushed, true);
+            app.AGFButton.Position = [199 34 100 22];
+            app.AGFButton.Text = '(AGF)';
+
+            % Create RESIMSECButton
+            app.RESIMSECButton = uibutton(app.UIFigure, 'push');
+            app.RESIMSECButton.ButtonPushedFcn = createCallbackFcn(app, @RESIMSECButtonPushed, true);
+            app.RESIMSECButton.Position = [25 443 100 22];
+            app.RESIMSECButton.Text = 'RESIM SEC';
+
+            % Create UIAxes2
+            app.UIAxes2 = uiaxes(app.UIFigure);
+            title(app.UIAxes2, 'yeni resim')
+            xlabel(app.UIAxes2, 'X')
+            ylabel(app.UIAxes2, 'Y')
+            app.UIAxes2.Position = [494 161 346 301];
+
+            % Create automaticthresholdButton
+            app.automaticthresholdButton = uibutton(app.UIFigure, 'push');
+            app.automaticthresholdButton.ButtonPushedFcn = createCallbackFcn(app, @automaticthresholdButtonPushed, true);
+            app.automaticthresholdButton.Position = [339 96 134 35];
+            app.automaticthresholdButton.Text = 'automatic threshold';
+
+            % Create BoundaryextractionButton
+            app.BoundaryextractionButton = uibutton(app.UIFigure, 'push');
+            app.BoundaryextractionButton.ButtonPushedFcn = createCallbackFcn(app, @BoundaryextractionButtonPushed, true);
+            app.BoundaryextractionButton.Position = [339 46 134 31];
+            app.BoundaryextractionButton.Text = 'Boundary extraction';
+
+            % Create OpeningButton
+            app.OpeningButton = uibutton(app.UIFigure, 'push');
+            app.OpeningButton.ButtonPushedFcn = createCallbackFcn(app, @OpeningButtonPushed, true);
+            app.OpeningButton.Position = [494 102 100 29];
+            app.OpeningButton.Text = 'Opening ';
+
+            % Create ClosingButton
+            app.ClosingButton = uibutton(app.UIFigure, 'push');
+            app.ClosingButton.ButtonPushedFcn = createCallbackFcn(app, @ClosingButtonPushed, true);
+            app.ClosingButton.Position = [494 46 100 31];
+            app.ClosingButton.Text = 'Closing';
+
+            % Create dilationButton
+            app.dilationButton = uibutton(app.UIFigure, 'push');
+            app.dilationButton.ButtonPushedFcn = createCallbackFcn(app, @dilationButtonPushed, true);
+            app.dilationButton.Position = [625 102 104 27];
+            app.dilationButton.Text = 'dilation';
+
+            % Create erosionButton
+            app.erosionButton = uibutton(app.UIFigure, 'push');
+            app.erosionButton.ButtonPushedFcn = createCallbackFcn(app, @erosionButtonPushed, true);
+            app.erosionButton.Position = [625 46 104 31];
+            app.erosionButton.Text = 'erosion';
+
+            % Show the figure after all components are created
+            app.UIFigure.Visible = 'on';
+        end
+    end
+
+    % App creation and deletion
+    methods (Access = public)
+
+        % Construct app
+        function app = homeWork5
+
+            % Create UIFigure and components
+            createComponents(app)
+
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end
